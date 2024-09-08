@@ -16,8 +16,11 @@ if (deleteCurrentFiles)
     }
 }
 
-PhotoProcessor photoProcessor = new(inputImagePath, outputDirectory);
-photoProcessor.ProcessPhotos();
+using PhotoProcessor photoProcessor = new(inputImagePath, outputDirectory);
+photoProcessor.WatcherProcessor();
+
+// Keep the application running
+while (Console.Read() != 'q') ;
 
 //// Load the original image
 //Mat originalImage = Cv2.ImRead(inputImagePath);

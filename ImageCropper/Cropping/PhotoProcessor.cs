@@ -1,14 +1,51 @@
-﻿using OpenCvSharp;
+﻿using ImageCropper.Utils;
+using OpenCvSharp;
 
 namespace ImageCropper.Cropping;
 
 internal class PhotoProcessor(
     string ImgDirectory,
-    string OutputFolder)
+    string OutputFolder) : IDisposable
 {
+    private readonly FileSystemWatcher watcher = new(ImgDirectory, "*.*");
+    private bool disposedValue;
+
+    public void WatcherProcessor()
+    {
+        if (!Directory.Exists(OutputFolder))
+        {
+            Directory.CreateDirectory(OutputFolder);
+        }
+
+        watcher.NotifyFilter = NotifyFilters.FileName;
+
+        watcher.Renamed += Handler;
+
+        watcher.EnableRaisingEvents = true;
+    }
+
+    private void Handler(object sender, RenamedEventArgs e)
+    {
+        if (IsImage(e.FullPath))
+        {
+            Mat image = Cv2.ImRead(e.FullPath);
+            var photos = PhotoExtractor.ExtractWithGrayScale(image, 240, 500, 500);
+
+            foreach (var photo in photos)
+            {
+                //var rotated = ImageRotator.RotateImage(photo);
+
+                string outputPath = Path.Combine(OutputFolder, $"{photo.GenerateName()}.png");
+                Cv2.ImWrite(outputPath, photo);
+
+                Console.WriteLine($"Saved: {outputPath}");
+            }
+        }
+    }
+
     public void ProcessPhotos()
     {
-        int photoCounter = 0;
+        //int photoCounter = 0;
 
         if (!Directory.Exists(OutputFolder))
         {
@@ -30,7 +67,7 @@ internal class PhotoProcessor(
                 {
                     //var rotated = ImageRotator.RotateImage(photo);
 
-                    string outputPath = Path.Combine(OutputFolder, $"Photo_{++photoCounter}.png");
+                    string outputPath = Path.Combine(OutputFolder, $"{photo.GenerateName()}.png");// $"Photo_{++photoCounter}.png");
                     Cv2.ImWrite(outputPath, photo);
 
                     Console.WriteLine($"Saved: {outputPath}");
@@ -51,7 +88,7 @@ internal class PhotoProcessor(
                 {
                     var rotated = ImageRotator.RotateImage(photo);
 
-                    string outputPath = Path.Combine(OutputFolder, $"Photo_{++photoCounter}.png");
+                    string outputPath = Path.Combine(OutputFolder, $"{photo.GenerateName()}.png");
                     Cv2.ImWrite(outputPath, photo);
 
                     Console.WriteLine($"Saved: {outputPath}");
@@ -85,5 +122,25 @@ internal class PhotoProcessor(
         }
 
         return false;
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                watcher.Dispose();
+            }
+
+            disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }
