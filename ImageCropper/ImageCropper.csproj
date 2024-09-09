@@ -9,19 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="oldProgram.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Include="oldProgram.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Emgu.CV" Version="4.9.0.5494" />
-		<PackageReference Include="Emgu.CV.runtime.windows" Version="4.9.0.5494" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
 		<PackageReference Include="OpenCvSharp4" Version="4.10.0.20240616" />
-		<PackageReference Include="OpenCvSharp4.Windows" Version="4.10.0.20240616" />
 	</ItemGroup>
 
 </Project>

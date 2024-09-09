@@ -1,4 +1,5 @@
-﻿using ImageCropper.Utils;
+﻿using ImageCropper.Rotation;
+using ImageCropper.Utils;
 using OpenCvSharp;
 
 namespace ImageCropper.Cropping;
