@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ImageCropper": {
+      "commandName": "Project",
+      "commandLineArgs": "-i \"C:\\Users\\Alisettar\\Pictures\\Scans\" -o \"C:\\Users\\Alisettar\\Pictures\\Scanned and processed\\output\" -w true "
+    }
+  }
+}

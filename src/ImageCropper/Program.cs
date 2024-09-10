@@ -1,23 +1,38 @@
-﻿using ImageCropper.Cropping;
+﻿using CommandLine;
+using ImageCropper.Cropping;
+using ImageCropper.Utils;
 
-string inputImagePath = @"C:\Users\Alisettar\Pictures\Scans\";
-string outputDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"output");
+var options = Parser.Default.ParseArguments<Options>(args).Value;
 
-bool deleteCurrentFiles = false;
-if (deleteCurrentFiles)
+if (options.DeleteCurrentFiles)
 {
     // Get all files in the directory
-    string[] files = Directory.GetFiles(outputDirectory);
+    string[] files = Directory.GetFiles(options.OutputFolder);
 
     // Delete each file in the directory
     foreach (string file in files)
     {
         File.Delete(file);
     }
+
+    Console.WriteLine($"Deleted all files in \"{options.OutputFolder}\"");
 }
 
-using PhotoProcessor photoProcessor = new(inputImagePath, outputDirectory);
-photoProcessor.WatcherProcessor();
+using PhotoProcessor photoProcessor = new(options.InputFolder, options.OutputFolder);
+
+if (options.WatchModeActive)
+{
+    Console.WriteLine($"Watcher mode activated." +
+        $"\nLooking for scanned files in \"{options.InputFolder}\"" +
+        $"\nOutputting cropped photos to \"{options.OutputFolder}\"" +
+        $"\nPress 'q' to quit. ");
+
+    photoProcessor.WatcherProcessor();
+}
+else
+{
+    photoProcessor.ProcessPhotos();
+}
 
 // Keep the application running
 while (Console.Read() != 'q') ;
